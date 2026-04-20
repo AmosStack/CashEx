@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CashEx Rates</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header>
+    <nav class="nav">
+      <div class="brand">CashEx</div>
+      <div class="nav-links">
+        <a href="./index.html">Home</a>
+        <a href="./auth.html">Auth</a>
+        <a href="./convert.html">Convert</a>
+        <a href="./transactions.html">Transactions</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container grid">
+    <section class="card">
+      <h2>All Rates</h2>
+      <button id="refreshBtn">Refresh</button>
+      <div id="listStatus" class="status" hidden></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>From</th>
+              <th>To</th>
+              <th>Buy</th>
+              <th>Sell</th>
+              <th>Updated</th>
+            </tr>
+          </thead>
+          <tbody id="ratesBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Add Rate (Admin)</h2>
+      <label for="newFrom">Currency From</label>
+      <input id="newFrom" placeholder="USD" />
+      <label for="newTo">Currency To</label>
+      <input id="newTo" placeholder="TZS" />
+      <label for="newBuy">Buy Rate</label>
+      <input id="newBuy" type="number" step="0.000001" title="Buy rate" placeholder="0.000000" />
+      <label for="newSell">Sell Rate</label>
+      <input id="newSell" type="number" step="0.000001" title="Sell rate" placeholder="0.000000" />
+      <button id="addBtn">Create Rate</button>
+      <div id="addStatus" class="status" hidden></div>
+
+      <h2>Update Rate (Admin)</h2>
+      <label for="updId">Rate ID</label>
+      <input id="updId" type="number" title="Rate ID" placeholder="1" />
+      <label for="updBuy">Buy Rate</label>
+      <input id="updBuy" type="number" step="0.000001" title="Buy rate" placeholder="0.000000" />
+      <label for="updSell">Sell Rate</label>
+      <input id="updSell" type="number" step="0.000001" title="Sell rate" placeholder="0.000000" />
+      <button id="updateBtn">Update Rate</button>
+      <div id="updStatus" class="status" hidden></div>
+    </section>
+  </main>
+
+  <script src="./api.js"></script>
+  <script>
+    const { apiRequest } = window.CashExApi;
+
+    function showStatus(el, msg, isError = false) {
+      el.hidden = false;
+      el.className = `status ${isError ? 'error' : 'success'}`;
+      el.textContent = msg;
+    }
+
+    async function loadRates() {
+      const body = document.getElementById('ratesBody');
+      const status = document.getElementById('listStatus');
+      try {
+        const rows = await apiRequest('/api/rates');
+        body.innerHTML = rows.map(r => `
+          <tr>
+            <td>${r.id}</td>
+            <td>${r.currency_from}</td>
+            <td>${r.currency_to}</td>
+            <td>${r.buy_rate}</td>
+            <td>${r.sell_rate}</td>
+            <td>${new Date(r.updated_at).toLocaleString()}</td>
+          </tr>
+        `).join('');
+        if (!rows.length) {
+          body.innerHTML = '<tr><td colspan="6">No rates found</td></tr>';
+        }
+        status.hidden = true;
+      } catch (error) {
+        showStatus(status, error.message, true);
+      }
+    }
+
+    document.getElementById('refreshBtn').addEventListener('click', loadRates);
+
+    document.getElementById('addBtn').addEventListener('click', async () => {
+      const status = document.getElementById('addStatus');
+      try {
+        await apiRequest('/api/rates', {
+          method: 'POST',
+          auth: true,
+          body: {
+            currency_from: document.getElementById('newFrom').value,
+            currency_to: document.getElementById('newTo').value,
+            buy_rate: Number(document.getElementById('newBuy').value),
+            sell_rate: Number(document.getElementById('newSell').value)
+          }
+        });
+        showStatus(status, 'Rate created');
+        loadRates();
+      } catch (error) {
+        showStatus(status, error.message, true);
+      }
+    });
+
+    document.getElementById('updateBtn').addEventListener('click', async () => {
+      const status = document.getElementById('updStatus');
+      const id = document.getElementById('updId').value;
+      try {
+        const data = await apiRequest(`/api/rates/${id}`, {
+          method: 'PUT',
+          auth: true,
+          body: {
+            buy_rate: Number(document.getElementById('updBuy').value),
+            sell_rate: Number(document.getElementById('updSell').value)
+          }
+        });
+        showStatus(status, data.message || 'Rate updated');
+        loadRates();
+      } catch (error) {
+        showStatus(status, error.message, true);
+      }
+    });
+
+    loadRates();
+  </script>
+</body>
+</html>
