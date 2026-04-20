@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CashEx Auth</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header>
+    <nav class="nav">
+      <div class="brand">CashEx</div>
+      <div class="nav-links">
+        <a href="./index.html">Home</a>
+        <a href="./rates.html">Rates</a>
+        <a href="./convert.html">Convert</a>
+        <a href="./transactions.html">Transactions</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container grid">
+    <section class="card">
+      <form id="registerForm">
+      <h2>Register</h2>
+      <label for="regName">Name</label>
+      <input id="regName" title="Name" placeholder="Full name" />
+      <label for="regEmail">Email</label>
+      <input id="regEmail" type="email" title="Email" placeholder="name@example.com" />
+      <label for="regPassword">Password</label>
+      <input id="regPassword" type="password" title="Password" placeholder="Password" />
+      <label for="regRole">Role</label>
+      <select id="regRole" title="Role">
+        <option value="customer">customer</option>
+        <option value="admin">admin</option>
+      </select>
+      <button id="registerBtn" type="submit">Register</button>
+      <div id="regStatus" class="status" hidden></div>
+      </form>
+    </section>
+
+    <section class="card">
+      <form id="loginForm">
+      <h2>Login</h2>
+      <label for="loginEmail">Email</label>
+      <input id="loginEmail" type="email" title="Email" placeholder="name@example.com" />
+      <label for="loginPassword">Password</label>
+      <input id="loginPassword" type="password" title="Password" placeholder="Password" />
+      <button id="loginBtn" type="submit">Login</button>
+      <button id="logoutBtn" class="secondary" type="button">Logout</button>
+      <div id="loginStatus" class="status" hidden></div>
+      <p><small>Token saved to localStorage after login.</small></p>
+      </form>
+    </section>
+  </main>
+
+  <script src="./api.js"></script>
+  <script>
+    const { apiRequest, setToken, clearToken } = window.CashExApi;
+
+    function showStatus(el, msg, isError = false) {
+      el.hidden = false;
+      el.className = `status ${isError ? 'error' : 'success'}`;
+      el.textContent = msg;
+    }
+
+    document.getElementById('registerForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const status = document.getElementById('regStatus');
+      try {
+        const payload = {
+          name: document.getElementById('regName').value,
+          email: document.getElementById('regEmail').value,
+          password: document.getElementById('regPassword').value,
+          role: document.getElementById('regRole').value
+        };
+        const data = await apiRequest('/api/auth/register', { method: 'POST', body: payload });
+        if (data.token) setToken(data.token);
+        showStatus(status, data.message || 'Registered successfully');
+      } catch (error) {
+        showStatus(status, error.message, true);
+      }
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const status = document.getElementById('loginStatus');
+      try {
+        const payload = {
+          email: document.getElementById('loginEmail').value,
+          password: document.getElementById('loginPassword').value
+        };
+        const data = await apiRequest('/api/auth/login', { method: 'POST', body: payload });
+        if (data.token) setToken(data.token);
+        showStatus(status, data.message || 'Login successful');
+      } catch (error) {
+        showStatus(status, error.message, true);
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      clearToken();
+      showStatus(document.getElementById('loginStatus'), 'Logged out');
+    });
+  </script>
+</body>
+</html>
