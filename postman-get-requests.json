@@ -1,0 +1,80 @@
+[
+  {
+    "info": {
+      "name": "CashEx GET Requests",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Health Check",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "http://localhost:5000/health",
+            "host": ["localhost"],
+            "port": "5000",
+            "path": ["health"]
+          }
+        }
+      },
+      {
+        "name": "Get Rates (Public)",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "http://localhost:5000/api/rates/",
+            "host": ["localhost"],
+            "port": "5000",
+            "path": ["api", "rates", ""]
+          }
+        }
+      },
+      {
+        "name": "Get User Transactions (Auth)",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{token}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "http://localhost:5000/api/transactions/user",
+            "host": ["localhost"],
+            "port": "5000",
+            "path": ["api", "transactions", "user"]
+          }
+        }
+      },
+      {
+        "name": "Get Admin Transactions (Auth + Admin)",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{token}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "http://localhost:5000/api/transactions/",
+            "host": ["localhost"],
+            "port": "5000",
+            "path": ["api", "transactions", ""]
+          }
+        }
+      }
+    ],
+    "variable": [
+      {
+        "key": "token",
+        "value": ""
+      }
+    ]
+  }
+]
