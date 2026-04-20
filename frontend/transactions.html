@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CashEx Transactions</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header>
+    <nav class="nav">
+      <div class="brand">CashEx</div>
+      <div class="nav-links">
+        <a href="./index.html">Home</a>
+        <a href="./auth.html">Auth</a>
+        <a href="./rates.html">Rates</a>
+        <a href="./convert.html">Convert</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container grid">
+    <section class="card">
+      <h2>Create Transaction</h2>
+      <label for="currencyFrom">Currency From</label>
+      <input id="currencyFrom" title="Currency from" placeholder="USD" />
+      <label for="currencyTo">Currency To</label>
+      <input id="currencyTo" title="Currency to" placeholder="TZS" />
+      <label for="amount">Amount</label>
+      <input id="amount" type="number" step="0.01" title="Amount" placeholder="100" />
+      <label for="type">Type</label>
+      <select id="type" title="Transaction type">
+        <option value="buy">buy</option>
+        <option value="sell">sell</option>
+      </select>
+      <label for="statusSelect">Status</label>
+      <select id="statusSelect" title="Transaction status">
+        <option value="completed">completed</option>
+        <option value="pending">pending</option>
+      </select>
+      <button id="createBtn">Create Transaction</button>
+      <div id="createStatus" class="status" hidden></div>
+    </section>
+
+    <section class="card">
+      <h2>My Transactions</h2>
+      <div class="actions">
+        <button id="loadMineBtn">Load Mine</button>
+        <button id="loadAdminBtn" class="secondary">Load Admin List</button>
+      </div>
+      <div id="listStatus" class="status" hidden></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>User</th>
+              <th>Pair</th>
+              <th>Amount</th>
+              <th>Rate</th>
+              <th>Total</th>
+              <th>Type</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="txnBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="./api.js"></script>
+  <script>
+    const { apiRequest } = window.CashExApi;
+
+    function showStatus(el, msg, isError = false) {
+      el.hidden = false;
+      el.className = `status ${isError ? 'error' : 'success'}`;
+      el.textContent = msg;
+    }
+
+    function renderRows(rows) {
+      const body = document.getElementById('txnBody');
+      if (!rows.length) {
+        body.innerHTML = '<tr><td colspan="8">No transactions found</td></tr>';
+        return;
+      }
+
+      body.innerHTML = rows.map(row => `
+        <tr>
+          <td>${row.id}</td>
+          <td>${row.user_email || row.user_id}</td>
+          <td>${row.currency_from}/${row.currency_to}</td>
+          <td>${row.amount}</td>
+          <td>${row.rate_used}</td>
+          <td>${row.total}</td>
+          <td>${row.type}</td>
+          <td>${row.status}</td>
+        </tr>
+      `).join('');
+    }
+
+    document.getElementById('createBtn').addEventListener('click', async () => {
+      const status = document.getElementById('createStatus');
+      try {
+        const data = await apiRequest('/api/transactions', {
+          method: 'POST',
+          auth: true,
+          body: {
+            currency_from: document.getElementById('currencyFrom').value,
+            currency_to: document.getElementById('currencyTo').value,
+            amount: Number(document.getElementById('amount').value),
+            type: document.getElementById('type').value,
+            status: document.getElementById('statusSelect').value
+          }
+        });
+        showStatus(status, `Created transaction #${data.id}`);
+      } catch (error) {
+        showStatus(status, error.message, true);
+      }
+    });
+
+    document.getElementById('loadMineBtn').addEventListener('click', async () => {
+      const status = document.getElementById('listStatus');
+      try {
+        const rows = await apiRequest('/api/transactions/user', { auth: true });
+        renderRows(rows);
+        status.hidden = true;
+      } catch (error) {
+        showStatus(status, error.message, true);
+      }
+    });
+
+    document.getElementById('loadAdminBtn').addEventListener('click', async () => {
+      const status = document.getElementById('listStatus');
+      try {
+        const rows = await apiRequest('/api/transactions', { auth: true });
+        renderRows(rows);
+        status.hidden = true;
+      } catch (error) {
+        showStatus(status, error.message, true);
+      }
+    });
+  </script>
+</body>
+</html>
