@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CashEx Frontend</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header>
+    <nav class="nav">
+      <div class="brand">CashEx</div>
+      <div class="nav-links">
+        <a href="./auth.html">Auth</a>
+        <a href="./rates.html">Rates</a>
+        <a href="./convert.html">Convert</a>
+        <a href="./transactions.html">Transactions</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      <h1>Simple Frontend Pages</h1>
+      <p>This frontend helps you test the backend quickly.</p>
+      <ul>
+        <li><b>Auth</b>: Register and login.</li>
+        <li><b>Rates</b>: View rates and admin update/add rates.</li>
+        <li><b>Convert</b>: Call the conversion endpoint.</li>
+        <li><b>Transactions</b>: Create and list transactions.</li>
+      </ul>
+      <label for="apiBase">API Base URL</label>
+      <input id="apiBase" placeholder="http://localhost:5000" />
+      <div class="actions">
+        <button id="saveBase">Save API URL</button>
+      </div>
+      <p><small>Current API Base: <span id="currentBase"></span></small></p>
+    </div>
+  </main>
+
+  <script>
+    const input = document.getElementById('apiBase');
+    const current = document.getElementById('currentBase');
+    const save = document.getElementById('saveBase');
+
+    const saved = localStorage.getItem('apiBase') || 'http://localhost:5000';
+    input.value = saved;
+    current.textContent = saved;
+
+    save.addEventListener('click', () => {
+      localStorage.setItem('apiBase', input.value.trim() || 'http://localhost:5000');
+      current.textContent = localStorage.getItem('apiBase');
+      alert('Saved');
+    });
+  </script>
+</body>
+</html>
