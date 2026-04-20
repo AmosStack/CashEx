@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CashEx Convert</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header>
+    <nav class="nav">
+      <div class="brand">CashEx</div>
+      <div class="nav-links">
+        <a href="./index.html">Home</a>
+        <a href="./auth.html">Auth</a>
+        <a href="./rates.html">Rates</a>
+        <a href="./transactions.html">Transactions</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Currency Conversion</h2>
+      <label for="from">From</label>
+      <input id="from" title="From currency" placeholder="USD" />
+      <label for="to">To</label>
+      <input id="to" title="To currency" placeholder="TZS" />
+      <label for="amount">Amount</label>
+      <input id="amount" type="number" step="0.01" title="Amount" placeholder="100" />
+      <label for="type">Type</label>
+      <select id="type" title="Transaction type">
+        <option value="buy">buy</option>
+        <option value="sell">sell</option>
+      </select>
+      <button id="convertBtn">Convert</button>
+      <div id="status" class="status" hidden></div>
+      <p><b>Rate:</b> <span id="rateResult">-</span></p>
+      <p><b>Total:</b> <span id="totalResult">-</span></p>
+    </section>
+  </main>
+
+  <script src="./api.js"></script>
+  <script>
+    const { apiRequest } = window.CashExApi;
+
+    function showStatus(el, msg, isError = false) {
+      el.hidden = false;
+      el.className = `status ${isError ? 'error' : 'success'}`;
+      el.textContent = msg;
+    }
+
+    document.getElementById('convertBtn').addEventListener('click', async () => {
+      const status = document.getElementById('status');
+      try {
+        const data = await apiRequest('/api/convert', {
+          method: 'POST',
+          body: {
+            from: document.getElementById('from').value,
+            to: document.getElementById('to').value,
+            amount: Number(document.getElementById('amount').value),
+            type: document.getElementById('type').value
+          }
+        });
+
+        document.getElementById('rateResult').textContent = data.rate;
+        document.getElementById('totalResult').textContent = data.total;
+        showStatus(status, 'Conversion successful');
+      } catch (error) {
+        showStatus(status, error.message, true);
+      }
+    });
+  </script>
+</body>
+</html>
