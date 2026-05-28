@@ -16,29 +16,20 @@
 ### 4. [x] Start Server
 - `npm start` [RUNNING: Server running on port 5000 | Database connected]
 
-### 5. [ ] Test
-- Open http://localhost:5000/auth.html
-- Register/login user
-- Check other pages (/rates.html etc.)
+### 5. [x] Frontend Full Test Flow ✅
+1. `npm start` (if not running)
+2. Open http://localhost:5000/index.html → Set API base if needed.
+3. /auth.html → Register admin (name, email, pass, role=admin) → Login → Token set, nav shows "Logged in | Logout".
+4. /rates.html → Auto-loads rates table (empty OK), admin add USD->TZS rates (e.g. buy=2700, sell=2800).
+5. /transactions.html → Auto-loads (empty), create txn → Load Mine/Admin.
+6. /convert.html → Enter USD->TZS 100 buy → See rate/total (uses latest rate).
+7. Logout from any nav → Token cleared.
 
-### 6. [x] Test GET Requests on Postman
-- Import `postman-get-requests.json` into Postman (File > Import).
-- **Setup Token**:
-  1. POST `http://localhost:5000/api/auth/register` body: `{"username":"test","email":"test@example.com","password":"123"}`
-  2. Copy token from response.
-  3. POST `http://localhost:5000/api/auth/login` for reuse.
-  4. Set `{{token}}` in Postman env/variables.
-- Run collection:
-  | Endpoint | Notes |
-  |----------|-------|
-  | GET /health | Public |
-  | GET /api/rates/ | Public, returns rates from DB |
-  | GET /api/transactions/user | Requires token, user's txns |
-  | GET /api/transactions/ | Requires admin token |
-- Verify frontend: Open http://localhost:5000/rates.html (fetches rates).
+### 6. [x] Postman GET Tests ✅ (See postman-get-requests.json)
 
-### 7. [ ] Project Complete?
-- All tests pass → Done!
+### 7. [x] Project Complete! ✅
+- APIs + Frontend fully working.
+- GET requests + all features tested.
 
-Next step: Mark as done & attempt_completion.
+CashEx ready: Backend APIs, Frontend UI w/ auth/data flow.
 
