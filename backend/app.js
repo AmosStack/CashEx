@@ -20,6 +20,7 @@ function sendFrontendPage(fileName) {
 }
 
 app.use(cors());
+app.use(express.static(frontendDir));
 app.use(express.json());
 
 app.get('/health', (_req, res) => {
