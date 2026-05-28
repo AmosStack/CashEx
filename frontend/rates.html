@@ -6,20 +6,28 @@
   <title>CashEx Rates</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
-<body>
+<body data-auth-required="true">
   <header>
     <nav class="nav">
       <div class="brand">CashEx</div>
       <div class="nav-links">
         <a href="./index.html">Home</a>
         <a href="./auth.html">Auth</a>
+        <a href="./rates.html" class="requires-auth">Rates</a>
         <a href="./convert.html">Convert</a>
-        <a href="./transactions.html">Transactions</a>
+        <a href="./transactions.html" class="requires-auth">Transactions</a>
+        <div id="auth-state"></div>
       </div>
     </nav>
   </header>
 
   <main class="container grid">
+    <section class="page-head span-full">
+      <span class="eyebrow">Protected</span>
+      <h1>Exchange Rates</h1>
+      <p>View all configured rates and manage updates if your account has admin access.</p>
+    </section>
+
     <section class="card">
       <h2>All Rates</h2>
       <button id="refreshBtn">Refresh</button>
@@ -80,7 +88,7 @@
       const body = document.getElementById('ratesBody');
       const status = document.getElementById('listStatus');
       try {
-        const rows = await apiRequest('/api/rates');
+        const rows = await apiRequest('/api/rates', { auth: true });
         body.innerHTML = rows.map(r => `
           <tr>
             <td>${r.id}</td>
@@ -143,5 +151,6 @@
 
     loadRates();
   </script>
+  <script src="./nav.js"></script>
 </body>
 </html>
