@@ -12,22 +12,23 @@
       <div class="brand">CashEx</div>
       <div class="nav-links">
         <a href="./auth.html">Auth</a>
-        <a href="./rates.html">Rates</a>
+        <a href="./rates.html" class="requires-auth">Rates</a>
         <a href="./convert.html">Convert</a>
-        <a href="./transactions.html">Transactions</a>
+        <a href="./transactions.html" class="requires-auth">Transactions</a>
+        <div id="auth-state"></div>
       </div>
     </nav>
   </header>
 
   <main class="container">
-    <div class="card">
-      <h1>Simple Frontend Pages</h1>
-      <p>This frontend helps you test the backend quickly.</p>
+    <div class="card hero">
+      <h1>CashEx Dashboard</h1>
+      <p>Manage authentication, test currency conversions, and track transactions from a cleaner, faster UI.</p>
       <ul>
         <li><b>Auth</b>: Register and login.</li>
-        <li><b>Rates</b>: View rates and admin update/add rates.</li>
+        <li><b>Rates</b>: View rates and admin update/add rates (login required).</li>
         <li><b>Convert</b>: Call the conversion endpoint.</li>
-        <li><b>Transactions</b>: Create and list transactions.</li>
+        <li><b>Transactions</b>: Create and list transactions (login required).</li>
       </ul>
       <label for="apiBase">API Base URL</label>
       <input id="apiBase" placeholder="http://localhost:5000" />
@@ -37,6 +38,8 @@
       <p><small>Current API Base: <span id="currentBase"></span></small></p>
     </div>
   </main>
+
+  <script src="./api.js"></script>
 
   <script>
     const input = document.getElementById('apiBase');
@@ -53,5 +56,6 @@
       alert('Saved');
     });
   </script>
+  <script src="./nav.js"></script>
 </body>
 </html>
