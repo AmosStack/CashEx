@@ -13,13 +13,21 @@
       <div class="nav-links">
         <a href="./index.html">Home</a>
         <a href="./auth.html">Auth</a>
-        <a href="./rates.html">Rates</a>
-        <a href="./transactions.html">Transactions</a>
+        <a href="./rates.html" class="requires-auth">Rates</a>
+        <a href="./convert.html">Convert</a>
+        <a href="./transactions.html" class="requires-auth">Transactions</a>
+        <div id="auth-state"></div>
       </div>
     </nav>
   </header>
 
   <main class="container">
+    <section class="page-head">
+      <span class="eyebrow">Conversion</span>
+      <h1>Currency Calculator</h1>
+      <p>Run a quick conversion by pair, amount, and trade direction.</p>
+    </section>
+
     <section class="card">
       <h2>Currency Conversion</h2>
       <label for="from">From</label>
@@ -35,8 +43,16 @@
       </select>
       <button id="convertBtn">Convert</button>
       <div id="status" class="status" hidden></div>
-      <p><b>Rate:</b> <span id="rateResult">-</span></p>
-      <p><b>Total:</b> <span id="totalResult">-</span></p>
+      <div class="metric-grid">
+        <div class="metric">
+          <b>Rate</b>
+          <span id="rateResult">-</span>
+        </div>
+        <div class="metric">
+          <b>Total</b>
+          <span id="totalResult">-</span>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -71,5 +87,6 @@
       }
     });
   </script>
+  <script src="./nav.js"></script>
 </body>
 </html>
